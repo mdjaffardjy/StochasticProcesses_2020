@@ -2,9 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import csv
-from sklearn.linear_model import LinearRegression
+#from sklearn.linear_model import LinearRegression
 import SDE 
-
 
 data_file = "data/brazil-TAVG-Trend.txt"
 
@@ -41,44 +40,64 @@ anomaly_cpt = anomaly_cpt.interpolate()
 
 #Trend - fitting models to the time series :
 
-yearly_anomaly = np.array([anomaly_cpt[i-120:i+120].mean() for i in range(120,len(anomaly_cpt)-120)])
+yearly_anomaly = np.array([anomaly_cpt[i-60:i+60].mean() for i in range(60,len(anomaly_cpt)-60)])
 plt.plot(date,anomaly_cpt,linewidth=0.1)
-plt.plot(date[120:-120],yearly_anomaly,color='red')
+plt.plot(date[60:-60],yearly_anomaly,color='red')
 plt.show()
-
+input("Press Enter to continue...") 
 #Use linear regression to fit to the time series, assuming yt to be Gaussian and independently distributed. 
 
 #constant
-
+(fit_0, [resid, rank, sv, rcond]) = np.polynomial.polynomial.Polynomial.fit(date,anomaly_cpt,0,full=True)
+plt.plot(date,fit_0(date),color='black')
 
 #linear 
-reg = LinearRegression().fit(date, np.array(anomaly_cpt))
-predictions = reg.predict(date)
+#reg = LinearRegression().fit(date, np.array(anomaly_cpt))
+#predictions = reg.predict(date)
 
-plt.plot(date,anomaly,linewidth=0.1)
-plt.plot(date,predictions,linewidth=0.1)
-plt.show()
+#plt.plot(date,anomaly,linewidth=0.1)
+#plt.plot(date,predictions,linewidth=0.1)
+
+(fit_1, [resid1, rank1, sv1, rcond1]) = np.polynomial.polynomial.Polynomial.fit(date,anomaly_cpt,1,full=True)
+plt.plot(date,fit_1(date),color='blue')
+
 
 #quadratic 
+(fit_2, [resid2, rank2, sv2, rcond2]) = np.polynomial.polynomial.Polynomial.fit(date,anomaly_cpt,2,full=True)
+plt.plot(date,anomaly_cpt,linewidth=0.1)
+plt.plot(date,fit_2(date),color='red')
+#sum of squared residuals = 467.1
+
+
 #cubic polynomial 
+(fit_3, [resid3, rank3, sv3, rcond3]) = np.polynomial.polynomial.Polynomial.fit(date,anomaly_cpt,3,full=True)
+plt.plot(date,fit_3(date),color='green')
+plt.show()
+#sum of squared residuals = 464.11
 
 #Wich regression model fits best?
+#3 is not better than 2
 
-
-#de-trending the time data
+#detrending
+est = fit_2(date)
+stoch = anomaly_cpt-est
+yearly_stoch = np.array([stoch[i-60:i+60].mean() for i in range(60,len(stoch)-60)])
+plt.plot(date, stoch, linewidth=0.1)
+plt.plot(date[60:-60],yearly_stoch,color='red')
+plt.show()
 
 #power spectral density
 dt = 0.1
-#f, S= SDE.psd(detrended,dt)
-#plt.plot(f,S)
-#plt.show()
+f, S= SDE.psd(stoch,dt)
+plt.plot(f,S)
+plt.show()
 
 #auto-correlation
 
-#A = autocorrel(S)
-#plt.plot(f,S)
-#plt.plot(f,A)
-#plt.show()
+A = SDE.autocorrel(S)
+plt.plot(f,S)
+plt.plot(f,A,color='red')
+plt.show()
 
 #comparison between the two = 
 
