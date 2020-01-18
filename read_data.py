@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import csv
-
+from sklearn.linear_model import LinearRegression
 #importing and cleaning the data
 
 data_file = "data/47.42N-10.66E-TAVG-Trend.txt"
@@ -36,13 +36,19 @@ anomaly_cpt = pd.Series(anomaly)
 anomaly_cpt = anomaly_cpt.interpolate()
 
 #important = verifier si c'est bon ou si y'a mieux, là c'est de l'interpolation linéaire donc wlh
+#should we also interpolate to get more data ? -> padding => probably not
 
 #Trend - fitting models to the time series :
 
 #Use linear regression to fit to the time series, assuming yt to be Gaussian and independently distributed. 
 
 #constant
+
+
 #linear
+linear_model = LinearRegression().fit(date, anomaly_cpt)
+
+
 #quadratic 
 #cubic polynomial 
 
