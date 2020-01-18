@@ -9,6 +9,7 @@ def test_func(x, a, b):
     return a * np.sin(b * x)
 
 
+import SDE 
 
 data_file = "data/brazil-TAVG-Trend.txt"
 
@@ -92,9 +93,25 @@ plt.plot(date[60:-60],yearly_stoch,color='red')
 #detrended mean : 1.48e-16
 
 params, params_covariance = optimize.curve_fit(test_func, x_data, y_data, p0=[2, 2])
+plt.show()
+
+#power spectral density
+dt = 0.1
+f, S= SDE.psd(stoch,dt)
+plt.plot(f,S)
+plt.show()
+
+#auto-correlation
+
+A = SDE.autocorrel(S)
+plt.plot(f,S)
+plt.plot(f,A,color='red')
+plt.show()
+
+#comparison between the two = 
 
 
-
+#Stochastic process that models the temperature anomaly
 
 
 
