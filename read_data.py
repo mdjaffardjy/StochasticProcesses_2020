@@ -5,7 +5,7 @@ import csv
 
 #importing and cleaning the data
 
-data_file = "data/47.42N-10.66E-TAVG-Trend.txt"
+data_file = "data/brazil-TAVG-Trend.txt"
 
 # initialize lists
 
@@ -35,7 +35,12 @@ plt.show()
 anomaly_cpt = pd.Series(anomaly)
 anomaly_cpt = anomaly_cpt.interpolate()
 
-#important = verifier si c'est bon ou si y'a mieux, là c'est de l'interpolation linéaire donc wlh
+yearly_anomaly = np.array([anomaly_cpt[i-120:i+120].mean() for i in range(120,len(anomaly_cpt)-120)])
+plt.plot(date,anomaly_cpt,linewidth=0.1)
+plt.plot(date[120:-120],yearly_anomaly,color='red')
+plt.show()
+
+#important = verifier si c'est bon ou si y'a mieux, la c'est de l'interpolation lineaire donc wlh
 
 #Trend - fitting models to the time series :
 
