@@ -2,8 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import csv
-
-#importing and cleaning the data
+from sklearn.linear_model import LinearRegression
 
 data_file = "data/brazil-TAVG-Trend.txt"
 
@@ -35,19 +34,29 @@ plt.show()
 anomaly_cpt = pd.Series(anomaly)
 anomaly_cpt = anomaly_cpt.interpolate()
 
-yearly_anomaly = np.array([anomaly_cpt[i-12:i+12].mean() for i in range(12,len(anomaly_cpt)-12)])
+#important = verifier si c'est bon ou si y'a mieux, la c'est de l'interpolation lineaire donc wlh
+
+
+#Trend - fitting models to the time series :
+
+yearly_anomaly = np.array([anomaly_cpt[i-120:i+120].mean() for i in range(120,len(anomaly_cpt)-120)])
 plt.plot(date,anomaly_cpt,linewidth=0.1)
 plt.plot(date[12:-12],yearly_anomaly,color='red')
 plt.show()
 
-#important = verifier si c'est bon ou si y'a mieux, la c'est de l'interpolation lineaire donc wlh
-
-#Trend - fitting models to the time series :
-
 #Use linear regression to fit to the time series, assuming yt to be Gaussian and independently distributed. 
 
 #constant
-#linear
+
+
+#linear 
+reg = LinearRegression().fit(date, np.array(anomaly_cpt))
+predictions = reg.predict(date)
+
+plt.plot(date,anomaly,linewidth=0.1)
+plt.plot(date,predictions,linewidth=0.1)
+plt.show()
+
 #quadratic 
 (fit_2, [resid2, rank2, sv2, rcond2]) = np.polynomial.polynomial.Polynomial.fit(date,anomaly_cpt,2,full=True)
 plt.plot(date,anomaly_cpt,linewidth=0.1)
