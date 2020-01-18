@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 import csv
 
 #importing and cleaning the data
@@ -31,9 +32,10 @@ plt.plot(date,anomaly,linewidth=0.1)
 plt.show()
 
 #fill out missing data by interpolation
+anomaly_cpt = pd.Series(anomaly)
+anomaly_cpt = anomaly_cpt.interpolate()
 
-
-
+#important = verifier si c'est bon ou si y'a mieux, là c'est de l'interpolation linéaire donc wlh
 
 #Trend - fitting models to the time series :
 
