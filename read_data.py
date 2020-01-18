@@ -4,7 +4,7 @@ import csv
 
 #importing and cleaning the data
 
-data_file = "45.81N-5.77E-TAVG-Trend.txt"
+data_file = "data/47.42N-10.66E-TAVG-Trend"
 
 # initialize lists
 
