@@ -32,7 +32,8 @@ plt.show()
 
 #fill out missing data by interpolation
 
-#no missing data...
+
+
 
 #Trend - fitting models to the time series :
 
