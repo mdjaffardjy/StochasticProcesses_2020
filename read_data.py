@@ -4,7 +4,7 @@ import csv
 
 #importing and cleaning the data
 
-data_file = "data/47.42N-10.66E-TAVG-Trend"
+data_file = "data/47.42N-10.66E-TAVG-Trend.txt"
 
 # initialize lists
 
@@ -31,3 +31,38 @@ plt.plot(date,anomaly,linewidth=0.1)
 plt.show()
 
 #fill out missing data by interpolation
+
+#no missing data...
+
+#Trend - fitting models to the time series :
+
+#Use linear regression to fit to the time series, assuming yt to be Gaussian and independently distributed. 
+
+#constant
+#linear
+#quadratic 
+#cubic polynomial 
+
+#Wich regression model fits best?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
