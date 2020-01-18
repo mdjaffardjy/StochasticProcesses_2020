@@ -3,9 +3,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import csv
 from sklearn.linear_model import LinearRegression
-#importing and cleaning the data
 
-data_file = "data/47.42N-10.66E-TAVG-Trend.txt"
+data_file = "data/brazil-TAVG-Trend.txt"
 
 # initialize lists
 
@@ -35,19 +34,28 @@ plt.show()
 anomaly_cpt = pd.Series(anomaly)
 anomaly_cpt = anomaly_cpt.interpolate()
 
-#important = verifier si c'est bon ou si y'a mieux, là c'est de l'interpolation linéaire donc wlh
-#should we also interpolate to get more data ? -> padding => probably not
+#important = verifier si c'est bon ou si y'a mieux, la c'est de l'interpolation lineaire donc wlh
+
 
 #Trend - fitting models to the time series :
+
+yearly_anomaly = np.array([anomaly_cpt[i-120:i+120].mean() for i in range(120,len(anomaly_cpt)-120)])
+plt.plot(date,anomaly_cpt,linewidth=0.1)
+plt.plot(date[120:-120],yearly_anomaly,color='red')
+plt.show()
 
 #Use linear regression to fit to the time series, assuming yt to be Gaussian and independently distributed. 
 
 #constant
 
 
-#linear
-linear_model = LinearRegression().fit(date, anomaly_cpt)
+#linear 
+reg = LinearRegression().fit(date, np.array(anomaly_cpt))
+predictions = reg.predict(date)
 
+plt.plot(date,anomaly,linewidth=0.1)
+plt.plot(date,predictions,linewidth=0.1)
+plt.show()
 
 #quadratic 
 #cubic polynomial 
