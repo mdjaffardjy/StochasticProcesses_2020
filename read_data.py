@@ -39,11 +39,11 @@ anomaly_cpt = anomaly_cpt.interpolate()
 
 #Trend - fitting models to the time series :
 
-yearly_anomaly = np.array([anomaly_cpt[i-12:i+12].mean() for i in range(12,len(anomaly_cpt)-12)])
+yearly_anomaly = np.array([anomaly_cpt[i-60:i+60].mean() for i in range(60,len(anomaly_cpt)-60)])
 plt.plot(date,anomaly_cpt,linewidth=0.1)
-plt.plot(date[12:-12],yearly_anomaly,color='red')
+plt.plot(date[60:-60],yearly_anomaly,color='red')
 plt.show()
-
+input("Press Enter to continue...") 
 #Use linear regression to fit to the time series, assuming yt to be Gaussian and independently distributed. 
 
 #constant
@@ -77,6 +77,12 @@ plt.show()
 #Wich regression model fits best?
 #3 is not better than 2
 
+#detrending
+est = fit_2(date)
+stoch = anomaly_cpt-est
+yearly_stoch = np.array([stoch[i-60:i+60].mean() for i in range(60,len(stoch)-60)])
+plt.plot(date, stoch, linewidth=0.1)
+plt.plot(date[60:-60],yearly_stoch,color='red')
 
 
 
