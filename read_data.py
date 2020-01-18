@@ -35,9 +35,9 @@ plt.show()
 anomaly_cpt = pd.Series(anomaly)
 anomaly_cpt = anomaly_cpt.interpolate()
 
-yearly_anomaly = np.array([anomaly_cpt[i-120:i+120].mean() for i in range(120,len(anomaly_cpt)-120)])
+yearly_anomaly = np.array([anomaly_cpt[i-12:i+12].mean() for i in range(12,len(anomaly_cpt)-12)])
 plt.plot(date,anomaly_cpt,linewidth=0.1)
-plt.plot(date[120:-120],yearly_anomaly,color='red')
+plt.plot(date[12:-12],yearly_anomaly,color='red')
 plt.show()
 
 #important = verifier si c'est bon ou si y'a mieux, la c'est de l'interpolation lineaire donc wlh
@@ -49,10 +49,20 @@ plt.show()
 #constant
 #linear
 #quadratic 
+(fit_2, [resid2, rank2, sv2, rcond2]) = np.polynomial.polynomial.Polynomial.fit(date,anomaly_cpt,2,full=True)
+plt.plot(date,anomaly_cpt,linewidth=0.1)
+plt.plot(date,fit_2(date),color='red')
+#sum of squared residuals = 467.1
+
+
 #cubic polynomial 
+(fit_3, [resid3, rank3, sv3, rcond3]) = np.polynomial.polynomial.Polynomial.fit(date,anomaly_cpt,3,full=True)
+plt.plot(date,fit_3(date),color='green')
+plt.show()
+#sum of squared residuals = 464.11
 
 #Wich regression model fits best?
-
+#3 is not better than 2
 
 
 
