@@ -68,11 +68,22 @@ plt.show()
 #de-trending the time data
 
 #power spectral density
-#
+dt = 0.1
+#f, S= SDE.psd(detrended,dt)
+#plt.plot(f,S)
+#plt.show()
+
+#auto-correlation
+
+#A = autocorrel(S)
+#plt.plot(f,S)
+#plt.plot(f,A)
+#plt.show()
+
+#comparison between the two = 
 
 
-
-
+#Stochastic process that models the temperature anomaly
 
 
 
