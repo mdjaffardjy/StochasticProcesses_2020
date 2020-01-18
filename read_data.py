@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import csv
 from sklearn.linear_model import LinearRegression
+import SDE 
+
 
 data_file = "data/brazil-TAVG-Trend.txt"
 
@@ -63,7 +65,10 @@ plt.show()
 #Wich regression model fits best?
 
 
+#de-trending the time data
 
+#power spectral density
+#
 
 
 
