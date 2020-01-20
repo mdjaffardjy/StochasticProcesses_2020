@@ -4,13 +4,15 @@ import pandas as pd
 import csv
 #from sklearn.linear_model import LinearRegression
 from scipy import optimize
+import math
 
 def test_func(x, a, b):
     return a * np.sin(b * x)
 
 
 import SDE 
-
+#Loading data
+#data_file = "data/47.42N-10.66E-TAVG-Trend.txt"
 data_file = "data/brazil-TAVG-Trend.txt"
 
 # initialize lists
@@ -50,7 +52,7 @@ yearly_anomaly = np.array([anomaly_cpt[i-60:i+60].mean() for i in range(60,len(a
 plt.plot(date,anomaly_cpt,linewidth=0.1)
 plt.plot(date[60:-60],yearly_anomaly,color='red')
 plt.show()
-input("Press Enter to continue...") 
+#input("Press Enter to continue...") 
 #Use linear regression to fit to the time series, assuming yt to be Gaussian and independently distributed. 
 
 #constant
@@ -58,11 +60,6 @@ input("Press Enter to continue...")
 plt.plot(date,fit_0(date),color='black')
 
 #linear 
-#reg = LinearRegression().fit(date, np.array(anomaly_cpt))
-#predictions = reg.predict(date)
-
-#plt.plot(date,anomaly,linewidth=0.1)
-#plt.plot(date,predictions,linewidth=0.1)
 
 (fit_1, [resid1, rank1, sv1, rcond1]) = np.polynomial.polynomial.Polynomial.fit(date,anomaly_cpt,1,full=True)
 plt.plot(date,fit_1(date),color='blue')
@@ -79,7 +76,7 @@ plt.plot(date,fit_2(date),color='red')
 (fit_3, [resid3, rank3, sv3, rcond3]) = np.polynomial.polynomial.Polynomial.fit(date,anomaly_cpt,3,full=True)
 plt.plot(date,fit_3(date),color='green')
 plt.show()
-#sum of squared residuals = 464.11
+#sum of squared residuals (Brazil) = 464.11
 
 #Wich regression model fits best?
 #3 is not better than 2
@@ -90,40 +87,49 @@ stoch = anomaly_cpt-est
 yearly_stoch = np.array([stoch[i-60:i+60].mean() for i in range(60,len(stoch)-60)])
 plt.plot(date, stoch, linewidth=0.1)
 plt.plot(date[60:-60],yearly_stoch,color='red')
-#detrended mean : 1.48e-16
+#detrended mean (Brazil) : 1.48e-16
 
-params, params_covariance = optimize.curve_fit(test_func, x_data, y_data, p0=[2, 2])
+#params, params_covariance = optimize.curve_fit(test_func, x_data, y_data, p0=[2, 2])
 plt.show()
 
 #power spectral density
-dt = 0.1
+dt = 1/12
 f, S= SDE.psd(stoch,dt)
 plt.plot(f,S)
 plt.show()
-
+#input()
 #auto-correlation
 
 A = SDE.autocorrel(S)
-plt.plot(f,S)
+#plt.plot(f,S)
 plt.plot(f,A,color='red')
 plt.show()
 
 #comparison between the two = 
 
 
+
 #Stochastic process that models the temperature anomaly
+xt=fit_2(date)
+yt=[0]
+yt2=[0]
+dt=1/12
+sigma=1
+for t in date[1:] :
+    yt.append(yt[-1]+math.sqrt(dt)*np.random.normal(0, math.sqrt(stoch.var())))
+    yt2.append(yt2[-1]+((yt2[-1]-yt2[-1]**3)+math.sqrt(dt)*sigma*np.random.normal(0,math.sqrt(stoch.var()))*dt))
+
+#sim = xt + yt
+yt = np.random.normal(0, math.sqrt(stoch.var()), len(date))
+sim = xt + yt
+sim2 = xt + yt2
+yt = np.array(yt)
 
 
+yearly_sim = np.array([sim[i-60:i+60].mean() for i in range(60,len(sim2)-60)])
 
-
-
-
-
-
-
-
-
-
-
-
-
+plt.plot(date, sim, linewidth=0.1, color='green')
+plt.plot(date, anomaly_cpt, linewidth=0.1, color='red')
+plt.plot(date[60:-60], yearly_anomaly, color='red')
+plt.plot(date[60:-60], yearly_sim, color='green')
+plt.show()
