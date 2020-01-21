@@ -87,11 +87,12 @@ stoch = anomaly_cpt-est
 yearly_stoch = np.array([stoch[i-60:i+60].mean() for i in range(60,len(stoch)-60)])
 plt.plot(date, stoch, linewidth=0.1)
 plt.plot(date[60:-60],yearly_stoch,color='red')
+
 #detrended mean (Brazil) : 1.48e-16
 
 #params, params_covariance = optimize.curve_fit(test_func, x_data, y_data, p0=[2, 2])
 plt.show()
-
+input()
 #power spectral density
 dt = 1/12
 f, S= SDE.psd(stoch,dt)
