@@ -5,6 +5,7 @@ import csv
 #from sklearn.linear_model import LinearRegression
 from scipy import optimize
 import math
+import annealing
 
 def test_func(x, a, b):
     return a * np.sin(b * x)
@@ -12,8 +13,8 @@ def test_func(x, a, b):
 
 import SDE 
 #Loading data
-#data_file = "data/47.42N-10.66E-TAVG-Trend.txt"
-data_file = "data/brazil-TAVG-Trend.txt"
+data_file = "data/47.42N-10.66E-TAVG-Trend.txt"
+#data_file = "data/brazil-TAVG-Trend.txt"
 
 # initialize lists
 
@@ -92,7 +93,7 @@ plt.plot(date[60:-60],yearly_stoch,color='red')
 
 #params, params_covariance = optimize.curve_fit(test_func, x_data, y_data, p0=[2, 2])
 plt.show()
-input()
+#input()
 #power spectral density
 dt = 1/12
 f, S= SDE.psd(stoch,dt)
@@ -112,25 +113,72 @@ plt.show()
 
 #Stochastic process that models the temperature anomaly
 xt=fit_2(date)
-yt=[0]
+
+#brownian
+yt=[stoch[0]]
+
+#langevin
 yt2=[0]
+sigma_l=.1
+
+#ornstein-uhlenbeck
+yt3=[0]
+theta=3.0240619860568625
+mu=0.
+sigma_ou=3.9956140610085646
+
 dt=1/12
-sigma=1
 for t in date[1:] :
-    yt.append(yt[-1]+math.sqrt(dt)*np.random.normal(0, math.sqrt(stoch.var())))
-    yt2.append(yt2[-1]+((yt2[-1]-yt2[-1]**3)+math.sqrt(dt)*sigma*np.random.normal(0,math.sqrt(stoch.var()))*dt))
+    #yt.append(yt[-1]+math.sqrt(dt)*np.random.normal(0, math.sqrt(stoch.var())))
+    #yt2.append(yt2[-1]+((yt2[-1]-yt2[-1]**3)+math.sqrt(dt)*sigma_l*np.random.normal(  )))
+    yt3.append(yt3[-1]-dt*theta*(yt3[-1]-mu)+math.sqrt(dt)*sigma_ou*np.random.normal( ))
 
+#yt = np.random.normal(0, math.sqrt(stoch.var()), len(date))
 #sim = xt + yt
-yt = np.random.normal(0, math.sqrt(stoch.var()), len(date))
-sim = xt + yt
-sim2 = xt + yt2
-yt = np.array(yt)
+#sim2 = xt + yt2
+sim3 = xt + yt3
+#yt = np.array(yt)
+#yt2 = np.array(yt2)
+yt3 = np.array(yt3)
 
 
-yearly_sim = np.array([sim[i-60:i+60].mean() for i in range(60,len(sim2)-60)])
+yearly_sim = np.array([sim3[i-60:i+60].mean() for i in range(60,len(sim3)-60)])
 
-plt.plot(date, sim, linewidth=0.1, color='green')
 plt.plot(date, anomaly_cpt, linewidth=0.1, color='red')
+plt.plot(date, sim3, linewidth=0.1, color='green')
+
 plt.plot(date[60:-60], yearly_anomaly, color='red')
 plt.plot(date[60:-60], yearly_sim, color='green')
 plt.show()
+input()
+
+dt = 1/12
+f_sim, S_sim= SDE.psd(yt3,dt)
+A_sim = SDE.autocorrel(S_sim)
+plt.plot(f_sim,S_sim)
+plt.show()
+input("Start annealing")
+
+def cost_function(x) :
+    yt3=[0]
+    theta=x[0]
+    mu=0.
+    sigma_ou=x[1]
+
+    dt=1/12
+    for t in date[1:] :
+        yt3.append(yt3[-1]-dt*theta*(yt3[-1]-mu)+math.sqrt(dt)*sigma_ou*np.random.normal( ))
+    
+    yt3 = np.array(yt3)
+    f_sim, S_sim= SDE.psd(yt3,dt)
+   # return abs(stoch.var()-yt3.var())
+    return sum((np.real(S)-np.real(S_sim))**2)
+
+
+state, c, states, costs = annealing.annealing([5., 5.],
+              cost_function,
+              annealing.random_neighbour,
+              annealing.acceptance_probability,
+              annealing.temperature,
+              maxsteps=10000,
+              debug=False)
